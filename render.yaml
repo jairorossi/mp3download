@@ -1,18 +1,18 @@
-# Crie render.yaml na raiz do projeto:
 services:
   - type: web
-    name: yt2mp3
+    name: youtube-to-mp3
     env: python
     plan: free
     region: oregon
-    buildCommand: |
-      pip install -r requirements.txt
-      sudo apt-get update && sudo apt-get install -y ffmpeg
+    branch: main
+    buildCommand: pip install -r requirements.txt && apt-get update && apt-get install -y ffmpeg
     startCommand: python app.py
     envVars:
+      - key: PORT
+        value: 5000
       - key: PYTHON_VERSION
-        value: 3.10.0
+        value: 3.9.0
     disk:
-      name: downloads
+      name: downloads-storage
       mountPath: /opt/render/project/src/downloads
       sizeGB: 1
