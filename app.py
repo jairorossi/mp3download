@@ -1,3 +1,10 @@
+# Verificar se temos FFmpeg, senão usar conversão interna
+import shutil
+if shutil.which("ffmpeg") is None:
+    print("AVISO: FFmpeg não encontrado. Usando conversão interna...")
+    # Forçar yt-dlp a usar conversor interno
+    os.environ['YTDLP_NO_EXTERNAL_FFMPEG'] = '1'
+
 from flask import Flask, render_template, request, send_file, jsonify, send_from_directory, Response
 import yt_dlp
 import os
