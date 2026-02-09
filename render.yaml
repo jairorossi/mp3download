@@ -1,18 +1,13 @@
 services:
   - type: web
     name: youtube-to-mp3
-    env: python
     plan: free
     region: oregon
-    branch: main
-    buildCommand: pip install -r requirements.txt && apt-get update && apt-get install -y ffmpeg
-    startCommand: python app.py
+    dockerfilePath: ./Dockerfile
     envVars:
       - key: PORT
         value: 5000
-      - key: PYTHON_VERSION
-        value: 3.9.0
     disk:
       name: downloads-storage
-      mountPath: /opt/render/project/src/downloads
+      mountPath: /app/downloads
       sizeGB: 1
