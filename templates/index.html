@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YouTube to MP3 Downloader</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .content {
+            padding: 40px;
+        }
+        
+        .input-group {
+            margin-bottom: 25px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 600;
+            color: #333;
+            font-size: 1.1em;
+        }
+        
+        input[type="text"] {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 18px 40px;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+        }
+        
+        .button:active {
+            transform: translateY(0);
+        }
+        
+        .button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        
+        .status {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 10px;
+            display: none;
+        }
+        
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+            display: block;
+        }
+        
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+            display: block;
+        }
+        
+        .status.processing {
+            background: #fff3cd;
+            color: #856404;
+            display: block;
+        }
+        
+        .downloads-list {
+            margin-top: 30px;
+            border-top: 2px solid #eee;
+            padding-top: 20px;
+        }
+        
+        .downloads-list h2 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+        
+        .file-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+        
+        .file-name {
+            flex-grow: 1;
+            margin-right: 20px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        
+        .download-btn {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 5px;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+            display: none;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        @media (max-width: 600px) {
+            .container {
+                margin: 10px;
+                border-radius: 15px;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .button {
+                padding: 15px 30px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>YouTube to MP3</h1>
+            <p>Converta vídeos do YouTube para MP3</p>
+        </div>
+        
+        <div class="content">
+            <div class="input-group">
+                <label for="url">URL do vídeo do YouTube:</label>
+                <input type="text" id="url" placeholder="Cole o link do YouTube aqui...">
+            </div>
+            
+            <div class="spinner" id="spinner"></div>
+            
+            <button class="button" onclick="downloadAudio()" id="downloadBtn">
+                Converter para MP3
+            </button>
+            
+            <div class="status" id="status"></div>
+            
+            <div class="downloads-list">
+                <h2>Downloads Recentes</h2>
+                <div id="downloadsList"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        async function downloadAudio() {
+            const url = document.getElementById('url').value.trim();
+            const btn = document.getElementById('downloadBtn');
+            const status = document.getElementById('status');
+            const spinner = document.getElementById('spinner');
+            
+            if (!url) {
+                showStatus('Por favor, insira uma URL do YouTube', 'error');
+                return;
+            }
+            
+            btn.disabled = true;
+            btn.textContent = 'Processando...';
+            spinner.style.display = 'block';
+            status.className = 'status processing';
+            status.textContent = 'Baixando e convertendo... Isso pode levar alguns minutos.';
+            status.style.display = 'block';
+            
+            try {
+                const response = await fetch('/download', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ url: url })
+                });
+                
+                const result = await response.json();
+                
+                if (result.status === 'success') {
+                    showStatus(`Download concluído: ${result.title}`, 'success');
+                    // Criar link de download
+                    const downloadLink = document.createElement('a');
+                    downloadLink.href = `/download_file/${encodeURIComponent(result.filename)}`;
+                    downloadLink.textContent = 'Clique aqui para baixar';
+                    downloadLink.className = 'download-btn';
+                    downloadLink.style.display = 'block';
+                    downloadLink.style.marginTop = '10px';
+                    status.appendChild(downloadLink);
+                    
+                    // Atualizar lista de downloads
+                    loadDownloads();
+                } else {
+                    showStatus(`Erro: ${result.message}`, 'error');
+                }
+            } catch (error) {
+                showStatus(`Erro de conexão: ${error.message}`, 'error');
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Converter para MP3';
+                spinner.style.display = 'none';
+            }
+        }
+        
+        function showStatus(message, type) {
+            const status = document.getElementById('status');
+            status.className = `status ${type}`;
+            status.textContent = message;
+            status.style.display = 'block';
+            
+            // Remover links anteriores
+            const oldLinks = status.querySelectorAll('a');
+            oldLinks.forEach(link => link.remove());
+        }
+        
+        async function loadDownloads() {
+            try {
+                const response = await fetch('/list_downloads');
+                const data = await response.json();
+                
+                const list = document.getElementById('downloadsList');
+                list.innerHTML = '';
+                
+                data.files.forEach(file => {
+                    const item = document.createElement('div');
+                    item.className = 'file-item';
+                    
+                    const nameSpan = document.createElement('span');
+                    nameSpan.className = 'file-name';
+                    nameSpan.textContent = file.name;
+                    
+                    const size = (file.size / (1024 * 1024)).toFixed(2);
+                    const sizeSpan = document.createElement('span');
+                    sizeSpan.textContent = `${size} MB`;
+                    
+                    const downloadLink = document.createElement('a');
+                    downloadLink.href = `/download_file/${encodeURIComponent(file.name)}`;
+                    downloadLink.className = 'download-btn';
+                    downloadLink.textContent = 'Download';
+                    
+                    item.appendChild(nameSpan);
+                    item.appendChild(sizeSpan);
+                    item.appendChild(downloadLink);
+                    
+                    list.appendChild(item);
+                });
+            } catch (error) {
+                console.error('Erro ao carregar downloads:', error);
+            }
+        }
+        
+        // Carregar lista de downloads quando a página carregar
+        window.onload = loadDownloads;
+    </script>
+</body>
+</html>
