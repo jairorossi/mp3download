@@ -1,21 +1,45 @@
 {
   "name": "YouTube to MP3 Converter",
   "short_name": "YT2MP3",
-  "description": "Convert YouTube videos to MP3",
+  "description": "Convert YouTube videos to high-quality MP3 files",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#ffffff",
+  "background_color": "#667eea",
   "theme_color": "#667eea",
+  "orientation": "portrait",
+  "scope": "/",
+  "categories": ["music", "productivity", "utilities"],
   "icons": [
     {
-      "src": "icon-192.png",
+      "src": "/static/icon-192.png",
       "sizes": "192x192",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     },
     {
-      "src": "icon-512.png",
+      "src": "/static/icon-512.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     }
-  ]
+  ],
+  "shortcuts": [
+    {
+      "name": "New Download",
+      "short_name": "Download",
+      "description": "Start a new YouTube download",
+      "url": "/?new=true",
+      "icons": [{ "src": "/static/icon-192.png", "sizes": "192x192" }]
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/static/screenshot1.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "description": "Main download interface"
+    }
+  ],
+  "prefer_related_applications": false,
+  "related_applications": []
 }
