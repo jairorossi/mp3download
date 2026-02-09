@@ -1,171 +1,167 @@
 <!DOCTYPE html>
-<html>
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>YouTube to MP3 Downloader</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#667eea">
+    <meta name="description" content="Converta vídeos do YouTube para MP3 gratuitamente">
+    <title>YouTube para MP3</title>
+    <link rel="manifest" href="/manifest.json">
+    <link rel="icon" href="/static/icon-192.png">
+    <link rel="apple-touch-icon" href="/static/icon-192.png">
     <style>
+        /* Estilos otimizados para mobile */
+        :root {
+            --primary: #667eea;
+            --secondary: #764ba2;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --light: #f8fafc;
+            --dark: #1e293b;
+        }
+        
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
         }
         
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
             min-height: 100vh;
-            padding: 20px;
+            padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
         }
         
         .container {
-            max-width: 800px;
-            margin: 0 auto;
+            max-width: 100%;
+            padding: 20px;
+        }
+        
+        .card {
             background: white;
             border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            overflow: hidden;
+            padding: 24px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
         }
         
-        .header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 30px;
-            text-align: center;
+        h1 {
+            font-size: 28px;
+            margin-bottom: 8px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
         
-        .header h1 {
-            font-size: 2.5em;
-            margin-bottom: 10px;
-        }
-        
-        .content {
-            padding: 40px;
+        .subtitle {
+            color: #64748b;
+            margin-bottom: 24px;
+            font-size: 16px;
         }
         
         .input-group {
-            margin-bottom: 25px;
+            margin-bottom: 20px;
         }
         
         label {
             display: block;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
             font-weight: 600;
-            color: #333;
-            font-size: 1.1em;
+            color: var(--dark);
+            font-size: 16px;
         }
         
         input[type="text"] {
             width: 100%;
-            padding: 15px;
-            border: 2px solid #e0e0e0;
-            border-radius: 10px;
+            padding: 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
             font-size: 16px;
-            transition: border-color 0.3s;
+            transition: all 0.3s;
+            background: #f8fafc;
         }
         
         input[type="text"]:focus {
             outline: none;
-            border-color: #667eea;
+            border-color: var(--primary);
+            background: white;
         }
         
-        .button {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 18px;
             border: none;
-            padding: 18px 40px;
-            border-radius: 10px;
+            border-radius: 12px;
             font-size: 18px;
             font-weight: 600;
             cursor: pointer;
-            width: 100%;
-            transition: transform 0.2s, box-shadow 0.2s;
+            transition: all 0.3s;
+            text-align: center;
+            margin-top: 8px;
+            user-select: none;
         }
         
-        .button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
         }
         
-        .button:active {
-            transform: translateY(0);
+        .btn-primary:active {
+            transform: scale(0.98);
         }
         
-        .button:disabled {
+        .btn:disabled {
             opacity: 0.6;
             cursor: not-allowed;
         }
         
-        .status {
+        .status-container {
             margin-top: 20px;
-            padding: 15px;
-            border-radius: 10px;
+            min-height: 60px;
+        }
+        
+        .status {
+            padding: 16px;
+            border-radius: 12px;
+            margin-bottom: 12px;
             display: none;
+            animation: slideIn 0.3s ease;
+        }
+        
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
         
         .status.success {
-            background: #d4edda;
-            color: #155724;
+            background: #d1fae5;
+            color: #065f46;
             display: block;
         }
         
         .status.error {
-            background: #f8d7da;
-            color: #721c24;
+            background: #fee2e2;
+            color: #991b1b;
             display: block;
         }
         
         .status.processing {
-            background: #fff3cd;
-            color: #856404;
+            background: #fef3c7;
+            color: #92400e;
             display: block;
         }
         
-        .downloads-list {
-            margin-top: 30px;
-            border-top: 2px solid #eee;
-            padding-top: 20px;
-        }
-        
-        .downloads-list h2 {
-            margin-bottom: 20px;
-            color: #333;
-        }
-        
-        .file-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 15px;
-            background: #f8f9fa;
-            border-radius: 8px;
-            margin-bottom: 10px;
-        }
-        
-        .file-name {
-            flex-grow: 1;
-            margin-right: 20px;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-        
-        .download-btn {
-            background: #28a745;
-            color: white;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 5px;
-            text-decoration: none;
-            cursor: pointer;
-        }
-        
         .spinner {
-            border: 3px solid #f3f3f3;
-            border-top: 3px solid #667eea;
-            border-radius: 50%;
             width: 40px;
             height: 40px;
+            border: 4px solid #e2e8f0;
+            border-top: 4px solid var(--primary);
+            border-radius: 50%;
             animation: spin 1s linear infinite;
             margin: 20px auto;
             display: none;
@@ -176,158 +172,486 @@
             100% { transform: rotate(360deg); }
         }
         
-        @media (max-width: 600px) {
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e2e8f0;
+            border-radius: 4px;
+            margin-top: 12px;
+            overflow: hidden;
+            display: none;
+        }
+        
+        .progress {
+            height: 100%;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            width: 0%;
+            transition: width 0.3s;
+        }
+        
+        .downloads-section {
+            margin-top: 32px;
+        }
+        
+        .section-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: var(--dark);
+        }
+        
+        .file-list {
+            max-height: 300px;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        .file-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px;
+            background: #f8fafc;
+            border-radius: 12px;
+            margin-bottom: 8px;
+            border-left: 4px solid var(--primary);
+        }
+        
+        .file-info {
+            flex: 1;
+            margin-right: 12px;
+        }
+        
+        .file-name {
+            font-weight: 500;
+            margin-bottom: 4px;
+            word-break: break-word;
+        }
+        
+        .file-size {
+            font-size: 14px;
+            color: #64748b;
+        }
+        
+        .file-actions {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .icon-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            border: none;
+            transition: background 0.3s;
+        }
+        
+        .download-btn {
+            background: var(--success);
+            color: white;
+        }
+        
+        .delete-btn {
+            background: var(--danger);
+            color: white;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #64748b;
+        }
+        
+        .empty-state i {
+            font-size: 48px;
+            margin-bottom: 16px;
+        }
+        
+        .pwa-install {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            right: 20px;
+            background: white;
+            padding: 16px;
+            border-radius: 12px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+            display: none;
+            z-index: 1000;
+        }
+        
+        .pwa-install.show {
+            display: block;
+            animation: slideUp 0.3s ease;
+        }
+        
+        @keyframes slideUp {
+            from { transform: translateY(100px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        
+        .install-btn {
+            background: var(--primary);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 12px;
+        }
+        
+        @media (min-width: 768px) {
             .container {
-                margin: 10px;
-                border-radius: 15px;
+                max-width: 600px;
+                margin: 0 auto;
+                padding-top: 40px;
+                padding-bottom: 40px;
             }
-            
-            .content {
-                padding: 20px;
-            }
-            
-            .header h1 {
-                font-size: 2em;
-            }
-            
-            .button {
-                padding: 15px 30px;
-            }
+        }
+        
+        /* Animações */
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.7; }
+            100% { opacity: 1; }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="header">
-            <h1>YouTube to MP3</h1>
-            <p>Converta vídeos do YouTube para MP3</p>
-        </div>
-        
-        <div class="content">
+        <div class="card">
+            <h1>YouTube para MP3</h1>
+            <p class="subtitle">Cole o link do YouTube e baixe o áudio em MP3</p>
+            
             <div class="input-group">
-                <label for="url">URL do vídeo do YouTube:</label>
-                <input type="text" id="url" placeholder="Cole o link do YouTube aqui...">
+                <label for="url">URL do vídeo:</label>
+                <input type="text" id="url" 
+                       placeholder="https://www.youtube.com/watch?v=..." 
+                       autocomplete="off"
+                       spellcheck="false">
+            </div>
+            
+            <div class="progress-bar" id="progressBar">
+                <div class="progress" id="progress"></div>
             </div>
             
             <div class="spinner" id="spinner"></div>
             
-            <button class="button" onclick="downloadAudio()" id="downloadBtn">
-                Converter para MP3
+            <button class="btn btn-primary" onclick="startDownload()" id="downloadBtn">
+                <span id="btnText">Converter para MP3</span>
             </button>
             
-            <div class="status" id="status"></div>
-            
-            <div class="downloads-list">
-                <h2>Downloads Recentes</h2>
-                <div id="downloadsList"></div>
+            <div class="status-container" id="statusContainer"></div>
+        </div>
+        
+        <div class="card downloads-section">
+            <h2 class="section-title">Downloads Recentes</h2>
+            <div class="file-list" id="fileList">
+                <div class="empty-state" id="emptyState">
+                    <div>📁</div>
+                    <p>Nenhum download ainda</p>
+                </div>
             </div>
         </div>
     </div>
+    
+    <div class="pwa-install" id="pwaInstall">
+        <p>📱 Instalar app para melhor experiência</p>
+        <button class="install-btn" onclick="installPWA()">Instalar Agora</button>
+        <button onclick="hidePWA()" style="margin-left: 12px; background: none; border: none; color: #666;">Depois</button>
+    </div>
 
     <script>
-        async function downloadAudio() {
+        // Variáveis globais
+        let currentTaskId = null;
+        let checkInterval = null;
+        let deferredPrompt = null;
+        
+        // Registrar Service Worker para PWA
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/service-worker.js')
+                .then(reg => console.log('Service Worker registrado'))
+                .catch(err => console.log('Erro SW:', err));
+        }
+        
+        // Detectar se pode instalar como PWA
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            showPWAInstall();
+        });
+        
+        function showPWAInstall() {
+            const pwaInstall = document.getElementById('pwaInstall');
+            pwaInstall.classList.add('show');
+        }
+        
+        function hidePWA() {
+            const pwaInstall = document.getElementById('pwaInstall');
+            pwaInstall.classList.remove('show');
+        }
+        
+        async function installPWA() {
+            if (!deferredPrompt) return;
+            
+            deferredPrompt.prompt();
+            const { outcome } = await deferredPrompt.userChoice;
+            
+            if (outcome === 'accepted') {
+                hidePWA();
+            }
+            deferredPrompt = null;
+        }
+        
+        async function startDownload() {
             const url = document.getElementById('url').value.trim();
             const btn = document.getElementById('downloadBtn');
-            const status = document.getElementById('status');
             const spinner = document.getElementById('spinner');
+            const progressBar = document.getElementById('progressBar');
+            const progress = document.getElementById('progress');
             
             if (!url) {
-                showStatus('Por favor, insira uma URL do YouTube', 'error');
+                showStatus('Por favor, cole um link do YouTube', 'error');
+                return;
+            }
+            
+            // Validar URL do YouTube
+            if (!url.includes('youtube.com') && !url.includes('youtu.be')) {
+                showStatus('Por favor, insira um link válido do YouTube', 'error');
                 return;
             }
             
             btn.disabled = true;
-            btn.textContent = 'Processando...';
+            btn.innerHTML = '<span class="pulse">Processando...</span>';
             spinner.style.display = 'block';
-            status.className = 'status processing';
-            status.textContent = 'Baixando e convertendo... Isso pode levar alguns minutos.';
-            status.style.display = 'block';
+            progressBar.style.display = 'block';
+            progress.style.width = '30%';
+            
+            showStatus('Iniciando download...', 'processing');
             
             try {
-                const response = await fetch('/download', {
+                const response = await fetch('/api/download', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ url: url })
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ url })
                 });
                 
-                const result = await response.json();
+                const data = await response.json();
                 
-                if (result.status === 'success') {
-                    showStatus(`Download concluído: ${result.title}`, 'success');
-                    // Criar link de download
-                    const downloadLink = document.createElement('a');
-                    downloadLink.href = `/download_file/${encodeURIComponent(result.filename)}`;
-                    downloadLink.textContent = 'Clique aqui para baixar';
-                    downloadLink.className = 'download-btn';
-                    downloadLink.style.display = 'block';
-                    downloadLink.style.marginTop = '10px';
-                    status.appendChild(downloadLink);
+                if (data.task_id) {
+                    currentTaskId = data.task_id;
+                    progress.style.width = '50%';
+                    showStatus('Download em andamento...', 'processing');
                     
-                    // Atualizar lista de downloads
-                    loadDownloads();
+                    // Começar a verificar status
+                    checkDownloadStatus();
                 } else {
-                    showStatus(`Erro: ${result.message}`, 'error');
+                    throw new Error(data.error || 'Erro desconhecido');
                 }
+                
             } catch (error) {
-                showStatus(`Erro de conexão: ${error.message}`, 'error');
-            } finally {
-                btn.disabled = false;
-                btn.textContent = 'Converter para MP3';
-                spinner.style.display = 'none';
+                resetUI();
+                showStatus(`Erro: ${error.message}`, 'error');
             }
         }
         
-        function showStatus(message, type) {
-            const status = document.getElementById('status');
-            status.className = `status ${type}`;
-            status.textContent = message;
-            status.style.display = 'block';
+        async function checkDownloadStatus() {
+            if (!currentTaskId) return;
             
-            // Remover links anteriores
-            const oldLinks = status.querySelectorAll('a');
-            oldLinks.forEach(link => link.remove());
+            clearInterval(checkInterval);
+            
+            checkInterval = setInterval(async () => {
+                try {
+                    const response = await fetch(`/api/status/${currentTaskId}`);
+                    const data = await response.json();
+                    
+                    const progress = document.getElementById('progress');
+                    
+                    if (data.status === 'success') {
+                        clearInterval(checkInterval);
+                        progress.style.width = '100%';
+                        
+                        setTimeout(() => {
+                            resetUI();
+                            showStatus(`✅ Download completo: ${data.title}`, 'success');
+                            
+                            // Criar link de download
+                            const statusContainer = document.getElementById('statusContainer');
+                            const downloadLink = document.createElement('a');
+                            downloadLink.href = `/api/download/${encodeURIComponent(data.filename)}`;
+                            downloadLink.className = 'btn btn-primary';
+                            downloadLink.style.marginTop = '12px';
+                            downloadLink.textContent = '📥 Baixar MP3';
+                            downloadLink.download = data.filename;
+                            statusContainer.appendChild(downloadLink);
+                            
+                            loadDownloads();
+                            
+                        }, 500);
+                        
+                    } else if (data.status === 'error') {
+                        clearInterval(checkInterval);
+                        resetUI();
+                        showStatus(`❌ Erro: ${data.message}`, 'error');
+                        
+                    } else {
+                        // Ainda processando
+                        progress.style.width = `${Math.min(90, parseInt(progress.style.width) + 5)}%`;
+                    }
+                    
+                } catch (error) {
+                    console.error('Erro ao verificar status:', error);
+                }
+            }, 2000);
+        }
+        
+        function resetUI() {
+            const btn = document.getElementById('downloadBtn');
+            const spinner = document.getElementById('spinner');
+            const progressBar = document.getElementById('progressBar');
+            
+            btn.disabled = false;
+            btn.innerHTML = '<span id="btnText">Converter para MP3</span>';
+            spinner.style.display = 'none';
+            progressBar.style.display = 'none';
+            document.getElementById('progress').style.width = '0%';
+        }
+        
+        function showStatus(message, type) {
+            const statusContainer = document.getElementById('statusContainer');
+            
+            // Limpar status anteriores
+            while (statusContainer.firstChild) {
+                statusContainer.removeChild(statusContainer.firstChild);
+            }
+            
+            const statusDiv = document.createElement('div');
+            statusDiv.className = `status ${type}`;
+            statusDiv.textContent = message;
+            
+            statusContainer.appendChild(statusDiv);
         }
         
         async function loadDownloads() {
             try {
-                const response = await fetch('/list_downloads');
+                const response = await fetch('/api/list');
                 const data = await response.json();
                 
-                const list = document.getElementById('downloadsList');
-                list.innerHTML = '';
+                const fileList = document.getElementById('fileList');
+                const emptyState = document.getElementById('emptyState');
+                
+                if (data.files.length === 0) {
+                    emptyState.style.display = 'block';
+                    return;
+                }
+                
+                emptyState.style.display = 'none';
+                fileList.innerHTML = '';
                 
                 data.files.forEach(file => {
                     const item = document.createElement('div');
                     item.className = 'file-item';
                     
-                    const nameSpan = document.createElement('span');
-                    nameSpan.className = 'file-name';
-                    nameSpan.textContent = file.name;
+                    const fileInfo = document.createElement('div');
+                    fileInfo.className = 'file-info';
                     
-                    const size = (file.size / (1024 * 1024)).toFixed(2);
-                    const sizeSpan = document.createElement('span');
-                    sizeSpan.textContent = `${size} MB`;
+                    const fileName = document.createElement('div');
+                    fileName.className = 'file-name';
+                    fileName.textContent = file.name;
                     
-                    const downloadLink = document.createElement('a');
-                    downloadLink.href = `/download_file/${encodeURIComponent(file.name)}`;
-                    downloadLink.className = 'download-btn';
-                    downloadLink.textContent = 'Download';
+                    const fileSize = document.createElement('div');
+                    fileSize.className = 'file-size';
+                    fileSize.textContent = `${(file.size / (1024 * 1024)).toFixed(2)} MB`;
                     
-                    item.appendChild(nameSpan);
-                    item.appendChild(sizeSpan);
-                    item.appendChild(downloadLink);
+                    fileInfo.appendChild(fileName);
+                    fileInfo.appendChild(fileSize);
                     
-                    list.appendChild(item);
+                    const fileActions = document.createElement('div');
+                    fileActions.className = 'file-actions';
+                    
+                    const downloadBtn = document.createElement('button');
+                    downloadBtn.className = 'icon-btn download-btn';
+                    downloadBtn.innerHTML = '📥';
+                    downloadBtn.onclick = () => {
+                        window.open(file.url, '_blank');
+                    };
+                    
+                    const deleteBtn = document.createElement('button');
+                    deleteBtn.className = 'icon-btn delete-btn';
+                    deleteBtn.innerHTML = '🗑️';
+                    deleteBtn.onclick = () => deleteFile(file.name);
+                    
+                    fileActions.appendChild(downloadBtn);
+                    fileActions.appendChild(deleteBtn);
+                    
+                    item.appendChild(fileInfo);
+                    item.appendChild(fileActions);
+                    
+                    fileList.appendChild(item);
                 });
+                
             } catch (error) {
                 console.error('Erro ao carregar downloads:', error);
             }
         }
         
-        // Carregar lista de downloads quando a página carregar
-        window.onload = loadDownloads;
+        async function deleteFile(filename) {
+            if (!confirm('Tem certeza que deseja excluir este arquivo?')) {
+                return;
+            }
+            
+            try {
+                const response = await fetch(`/api/delete/${encodeURIComponent(filename)}`, {
+                    method: 'DELETE'
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    showStatus('Arquivo excluído com sucesso', 'success');
+                    loadDownloads();
+                } else {
+                    throw new Error(data.error || 'Erro ao excluir');
+                }
+                
+            } catch (error) {
+                showStatus(`Erro ao excluir: ${error.message}`, 'error');
+            }
+        }
+        
+        // Carregar downloads ao iniciar
+        document.addEventListener('DOMContentLoaded', () => {
+            loadDownloads();
+            
+            // Tentar detectar link colado da área de transferência
+            const urlInput = document.getElementById('url');
+            urlInput.addEventListener('paste', (e) => {
+                setTimeout(() => {
+                    if (urlInput.value.includes('youtube.com') || urlInput.value.includes('youtu.be')) {
+                        urlInput.select();
+                    }
+                }, 10);
+            });
+            
+            // Foco automático no input
+            urlInput.focus();
+        });
+        
+        // Adicionar suporte a tecla Enter
+        document.getElementById('url').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                startDownload();
+            }
+        });
     </script>
 </body>
 </html>
